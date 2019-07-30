@@ -2,6 +2,7 @@
 
 ## Unreleased
 * Download and install bzr when modules are in use.
+* Remove hg and bzr installation as they are now part of the heroku-16 and heroku-18 build images.
 
 ## v126 (2019-07-10)
 * Set the public bit on files uploaded by ./sbin/sync-files.sh so that the files are publicly available.

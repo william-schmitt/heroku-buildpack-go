@@ -1,7 +1,38 @@
 #!/usr/bin/env bash
 # See README.md for info on running these tests.
 
+testModWithHgDep() {
+  if [ "${IMAGE}" = "heroku/cedar:14" ]; then
+    echo "!!!"
+    echo "!!! Skipping this test on heroku/cedar:14"
+    echo "hg isn't available in cedar:14"
+    echo "!!!"
+    return 0
+  fi
+
+  fixture "mod-with-hg-dep"
+
+  assertDetected
+
+  compile
+  assertModulesBoilerplateCaptured
+  assertGoInstallCaptured
+  assertGoInstallOnlyFixturePackageCaptured
+
+  # The other deps are downloaded/installed
+  assertCapturedSuccess
+  assertInstalledFixtureBinary
+}
+
 testModWithBZRDep() {
+  if [ "${IMAGE}" = "heroku/cedar:14" ]; then
+    echo "!!!"
+    echo "!!! Skipping this test on heroku/cedar:14"
+    echo "bzr isn't available in cedar:14"
+    echo "!!!"
+    return 0
+  fi
+
   fixture "mod-with-bzr-dep"
 
   assertDetected
@@ -622,37 +653,6 @@ testTestPackGBWithTests() {
   assertCaptured "RUN   ExampleHello"
   assertCaptured "PASS: ExampleHello"
   assertCaptured "BenchmarkHello"
-}
-
-testGlideWithHgDep() {
-    if [ "${IMAGE}" = "heroku/cedar:14" ]; then
-    echo "!!!"
-    echo "!!! Skipping this test on heroku/cedar:14"
-    echo "!!! See: https://www.mercurial-scm.org/wiki/SecureConnections (3.1)"
-    echo "!!!"
-    return 0
-  fi
-
-  echo "!!!"
-  echo "!!! Skipping this test as Glide uses bitbucket v1.0 API, which is no longer supported"
-  echo "!!! https://developer.atlassian.com/cloud/bitbucket/deprecation-notice-v1-apis/"
-  echo "!!! TODO: move test to go modules"
-  echo "!!!"
-  return 0
-
-  fixture "glide-with-hg-dep"
-
-  assertDetected
-
-  compile
-  assertCaptured "Installing go"
-  assertCaptured "Installing glide"
-  assertCaptured "Fetching any unsaved dependencies (glide install)"
-  assertCaptured "github.com/heroku/fixture/vendor/bitbucket.org/pkg/inflect"
-  assertCaptured "Running: go install -v -tags heroku ."
-  assertCaptured "github.com/heroku/fixture"
-  assertCapturedSuccess
-  assertCompiledBinaryExists
 }
 
 testGovendorCmds() {
